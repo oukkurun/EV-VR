@@ -1,50 +1,49 @@
 using UnityEngine;
-using UnityEngine.XR.Interaction.Toolkit.Locomotion;
+using UnityEngine.InputSystem;
 
 public class ControlSalto : MonoBehaviour
 {
+    [SerializeField] InputActionReference accionSalto;
     [SerializeField] LayerMask capasPiso = ~0;
     [SerializeField] float distanciaExtra = 0.15f;
     [SerializeField] float tiempoCoyote = 0.1f;
+    [SerializeField] float bloqueoPostSalto = 0.3f;
 
-    LocomotionProvider salto;
     CharacterController cc;
     float ultimaVezEnPiso;
-    float ultimaVezSubiendo;
-    float ultimaY;
+    float ultimoSalto = -10f;
 
     void Awake()
     {
-        salto = GetComponent<LocomotionProvider>();
         cc = GetComponentInParent<CharacterController>();
-    }
-
-    void Start()
-    {
-        ultimaY = cc.transform.position.y;
     }
 
     void Update()
     {
-        bool enPiso = DetectarPiso();
-        if (enPiso) ultimaVezEnPiso = Time.time;
+        if (accionSalto == null) return;
+        InputAction accion = accionSalto.action;
 
-        float y = cc.transform.position.y;
-        float velY = (y - ultimaY) / Mathf.Max(Time.deltaTime, 0.0001f);
-        ultimaY = y;
-        if (velY > 0.2f) ultimaVezSubiendo = Time.time;
+        if (DetectarPiso()) ultimaVezEnPiso = Time.time;
 
-        bool cayendo = velY < -0.5f;
-        bool permitir = enPiso
-            || Time.time - ultimaVezEnPiso < tiempoCoyote
-            || !cayendo;
+        bool puedeSaltar =
+            Time.time - ultimaVezEnPiso < tiempoCoyote &&
+            Time.time - ultimoSalto > bloqueoPostSalto;
 
-        if (salto.enabled != permitir) salto.enabled = permitir;
+        if (puedeSaltar)
+        {
+            if (!accion.enabled) accion.Enable();
+            if (accion.WasPressedThisFrame()) ultimoSalto = Time.time;
+        }
+        else if (!accion.IsPressed())
+        {
+            // En el aire y con el botón suelto: se bloquea una nueva pulsación
+            if (accion.enabled) accion.Disable();
+        }
     }
 
     void OnDisable()
     {
-        if (salto != null) salto.enabled = true;
+        if (accionSalto != null) accionSalto.action.Enable();
     }
 
     bool DetectarPiso()
