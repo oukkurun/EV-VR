@@ -35,7 +35,7 @@ Shader "UI/AlwaysOnTop"
         Cull Off
         Lighting Off
         ZWrite Off
-        ZTest Always // <--- ESTA LÍNEA HACE LA MAGIA
+        ZTest Always
         Blend SrcAlpha OneMinusSrcAlpha
         ColorMask [_ColorMask]
 
