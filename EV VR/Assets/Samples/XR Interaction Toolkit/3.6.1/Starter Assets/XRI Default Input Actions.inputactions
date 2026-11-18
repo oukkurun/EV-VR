@@ -1202,6 +1202,17 @@
                 },
                 {
                     "name": "",
+                    "id": "c14a2780-d0c3-4b2e-80eb-67dba981be40",
+                    "path": "<HololensHand>{RightHand}/selectPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Select Value",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "487f4f2e-9e9b-49aa-b0f2-4037a24624f5",
                     "path": "<XRController>{LeftHand}/{TriggerButton}",
                     "interactions": "",
